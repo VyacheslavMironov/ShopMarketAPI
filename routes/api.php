@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/user/create', [\App\Http\Controllers\UserController::class, 'registration']);
+Route::get('/user/auth/email/{user:email}/password/{passwordKey?}', [\App\Http\Controllers\UserController::class, 'auth']);
+
+Route::middleware('auth:sanctum')->group(function (){
+    Route::get('/user/logout/{userId}', [\App\Http\Controllers\UserController::class, 'logout']);
 });
