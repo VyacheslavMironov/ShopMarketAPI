@@ -51,6 +51,7 @@ class UserController extends Controller
             self::USER_REGISTRATION_VALIDATOR, 
             self::USER_REGISTRATION_ERROR_MESSAGE
         );
+        
         if (array_key_exists('errors', $is_valid))
         {
             return $is_valid;

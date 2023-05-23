@@ -17,13 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
-            $table->string('images');
-            $table->jsonb('parametrs')->nullable(true);
             $table->float('price');
-            $table->string('slug');
-            $table->foreignId('users_id')
-                ->constrained()
-                ->onDelete("CASCADE");
             $table->timestamps();
         });
     }
