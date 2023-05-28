@@ -17,6 +17,8 @@ class Shop extends Model
     protected $fillable = [
         'title',
         'description',
-        'price'
+        'price',
+        'slug',
+        'users_id',
     ];
 }

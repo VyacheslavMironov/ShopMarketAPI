@@ -3,75 +3,107 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Shop;
 
 class ShopController extends Controller
 {
-    private const EVENT_SHOP_VALIDATOR = [
-        "title" => "required|min:2|max:10",
-        "description" => "required|min:1",
-        "price" => "required"
+    private const SHOP_VALIDATOR = [
+        "title" => "required|min:2|max:190",
+        "description" => "required|min:10|max:1500",
+        "price" => "required",
+        "users_id" => "required"
     ];
 
-    private const EVENT_SHOP_ERROR_MESSAGE = [
+    private const SHOP_ERROR_MESSAGE = [
         // REQUIRED
-        "title.required" => "Укажите адрес название",
-        "description.required" => "Укажите адрес описание",
-        "price.required" => "Укажите адрес цену",
+        "title.required" => "Укажите название товара",
+        "description.required" => "Заполните описание товара",
+        "price.required" => "Укажите цену товара",
+        "users_id.required" => "Вы должны быть авторизованным",
         // MIN
-        "title.min" => "Заголовок не должен быть меньше :min символов.",
-        "description.min" => "Описание слишком короткое.",
-        // REQUIRED
-        "title.max" => "Заголовок не должен превышать :max символов.",
+        "title.min" => "Название товара не должно быть меньше :min символов",
+        "description.min" => "Описание товара не должно быть меньше :min символов",
+        // MAX
+        "title.max" => "Название товара не должно превышать :max символов",        
+        "description.max" => "Описание товара не должно превышать :max символов"     
     ];
+
+    public function all(Request $request)
+    {
+        return Shop::get();
+    }
 
     public function create(Request $request)
     {
         $is_valid = $request->validate(
-            self::EVENT_SHOP_VALIDATOR, 
-            self::EVENT_SHOP_ERROR_MESSAGE
+            self::SHOP_VALIDATOR, 
+            self::SHOP_ERROR_MESSAGE
         );
-        
-        if (key_exists('errors', $is_valid))
+        // Логика возврата ответа
+        if (array_key_exists('errors', $is_valid))
         {
             return $is_valid;
-        } else {
-            $create = Shop::create([
-                "title" => $request->title,
-                "description" => $request->description,
-                "price" => $request->price
-            ]);
-            return $create;
+        } 
+        else
+        {
+            $shop = new Shop();
+            $shop->title = $is_valid['title'];
+            $shop->description = $is_valid['description'];
+            $shop->price = $is_valid['price'];
+            $shop->slug = Str::slug($is_valid['title'], '_');
+            $shop->users_id = $is_valid['users_id'];
+            $shop->save();
+            return $shop;
         }
-    }
-
-    public function show(Shop $item)
-    {
-        return $item;
-    }
-
-    public function all()
-    {
-        return Shop::get();
     }
 
     public function update(Request $request)
     {
         $is_valid = $request->validate(
-            self::EVENT_SHOP_VALIDATOR, 
-            self::EVENT_SHOP_ERROR_MESSAGE
+            self::SHOP_VALIDATOR, 
+            self::SHOP_ERROR_MESSAGE
         );
-        
-        if (key_exists('errors', $is_valid))
+        // Логика возврата ответа
+        if (array_key_exists('errors', $is_valid))
         {
             return $is_valid;
-        } else {
-           $update = Shop::find($request->id);
-           $update->title = $is_valid["title"];
-           $update->description = $is_valid["description"];
-           $update->price = $is_valid["price"];
-           $update->save();
-           return $update;
+        } 
+        else
+        {
+            $shop = Shop::find($request->id);
+            $shop->title = $is_valid['title'];
+            $shop->description = $is_valid['description'];
+            $shop->price = $is_valid['price'];
+            $shop->slug = Str::slug($is_valid['title'], '_');
+            $shop->users_id = $is_valid['users_id'];
+            $shop->save();
+            return $shop;
+        }
+    }
+
+    public function show(Shop $shopId)
+    {
+        try
+        {
+            return $shopId;
+        } 
+        catch(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException)
+        {
+            return array("errors" => "Товар не найден!");
+        }
+        
+    }
+
+    public function delete(Shop $shopId)
+    {
+        try{
+            $shopId->delete();
+            return $shopId;
+        }
+        catch(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException)
+        {
+            return array("errors" => "Товар не найден!");
         }
     }
 }
