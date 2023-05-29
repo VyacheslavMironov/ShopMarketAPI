@@ -28,4 +28,8 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::post('/shop/create', [\App\Http\Controllers\ShopController::class, 'create']);
     Route::post('/shop/update', [\App\Http\Controllers\ShopController::class, 'update']);
     Route::get('/shop/delete/{shopId}', [\App\Http\Controllers\ShopController::class, 'delete']);
+    // Backet
+    Route::post('/backet/create', [\App\Http\Controllers\BacketController::class, 'create']);
+    Route::get('/backet/show/{backetUserId:users_id}', [\App\Http\Controllers\BacketController::class, 'show']);
+    Route::get('/backet/delete/{backetId}', [\App\Http\Controllers\BacketController::class, 'delete']);
 });
